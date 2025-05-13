@@ -14,6 +14,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
@@ -37,35 +39,33 @@ public class ExpenseControllerTest {
     }
 
     @Test
-    void createExpense_shouldReturnCreatedExpense() throws Exception {
-        Expense expense = new Expense("Lunch", 20.5, LocalDate.now(), null, null);
-        when(expenseService.saveExpense(any(Expense.class))).thenReturn(expense);
+    void addExpense_shouldReturnCreatedExpense() throws Exception {
+        Expense expense = new Expense("Lunch", 20.5, LocalDate.now(), "patricia@yahoo.com");
+        when(expenseService.addExpense(any(Expense.class))).thenReturn(expense);
 
         mockMvc.perform(post("/api/expenses")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"title\": \"Lunch\", \"amount\": 20.5, \"date\": \"2025-05-11\"}"))
+                        .content("{\"title\": \"Lunch\", \"amount\": 20.5, \"date\": \"2025-05-11\", \"userEmail\": \"patricia@yahoo.com\"}"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.title").value("Lunch"))
-                .andExpect(jsonPath("$.amount").value(20.5));
+                .andExpect(jsonPath("$.amount").value(20.5))
+                .andExpect(jsonPath("$.userEmail").value("patricia@yahoo.com"));
     }
 
-    @Test
-    void getExpense_shouldReturnExpense() throws Exception {
-        Expense expense = new Expense("Lunch", 20.5, LocalDate.now(), null, null);
-        when(expenseService.getExpense(1L)).thenReturn(Optional.of(expense));
 
-        mockMvc.perform(get("/api/expenses/1"))
+    @Test
+    void getExpensesWithUserEmail_shouldReturnFilteredExpenses() throws Exception {
+        Expense expense = new Expense("Lunch", 20.5, LocalDate.now(), "patricia@yahoo.com");
+        List<Expense> expenses = Collections.singletonList(expense);
+
+        when(expenseService.getExpensesByUserEmail("patricia@yahoo.com")).thenReturn(expenses);
+
+        mockMvc.perform(get("/api/expenses")
+                        .param("userEmail", "patricia@yahoo.com"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value("Lunch"))
-                .andExpect(jsonPath("$.amount").value(20.5));
-    }
-
-    @Test
-    void getExpense_shouldReturnNotFound() throws Exception {
-        when(expenseService.getExpense(1L)).thenReturn(Optional.empty());
-
-        mockMvc.perform(get("/api/expenses/1"))
-                .andExpect(status().isNotFound());
+                .andExpect(jsonPath("$[0].title").value("Lunch"))
+                .andExpect(jsonPath("$[0].amount").value(20.5))
+                .andExpect(jsonPath("$[0].userEmail").value("patricia@yahoo.com"));
     }
 
     @Test
@@ -82,7 +82,7 @@ public class ExpenseControllerTest {
         updatedExpense.setId(1L);
         updatedExpense.setTitle("Updated Title");
         updatedExpense.setAmount(200.0);
-        updatedExpense.setDate(LocalDate.of(2024, 12, 31));  // Ensure the date is a LocalDate
+        updatedExpense.setDate(LocalDate.of(2024, 12, 31));
 
         when(expenseService.updateExpense(eq(1L), any(Expense.class))).thenReturn(updatedExpense);
 

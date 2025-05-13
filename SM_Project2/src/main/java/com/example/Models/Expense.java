@@ -1,6 +1,8 @@
 package com.example.Models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
@@ -20,18 +22,16 @@ public class Expense {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JsonProperty("userEmail")
+    private String userEmail;
 
     public Expense() {}
 
-    public Expense(String title, Double amount, LocalDate date, Category category, User user) {
+    public Expense(String title, Double amount, LocalDate date, String userEmail) {
         this.title = title;
         this.amount = amount;
         this.date = date;
-        this.category = category;
-        this.user = user;
+        this.userEmail = userEmail;
     }
 
     public Long getId() { return id; }
@@ -39,12 +39,14 @@ public class Expense {
     public Double getAmount() { return amount; }
     public LocalDate getDate() { return date; }
     public Category getCategory() { return category; }
-    public User getUser() { return user; }
+    public String getUserEmail() { return userEmail; }
 
     public void setId(Long id) { this.id = id; }
     public void setTitle(String title) { this.title = title; }
     public void setAmount(Double amount) { this.amount = amount; }
     public void setDate(LocalDate date) { this.date = date; }
     public void setCategory(Category category) { this.category = category; }
-    public void setUser(User user) { this.user = user; }
+    public void setUserEmail(String userEmail) { this.userEmail = userEmail; }
+
+
 }

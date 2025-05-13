@@ -27,13 +27,11 @@ public class ExpenseService {
         return expenseRepository.findAll(); // Obține toate cheltuielile din baza de date
     }
 
-    public List<Expense> getExpensesByUser(Long userId) {
-        return expenseRepository.findByUserId(userId);
+
+    public List<Expense> getExpensesByUserEmail(String email) {
+        return expenseRepository.findByUserEmail(email);
     }
 
-    public List<Expense> getExpensesBetweenDates(LocalDate start, LocalDate end) {
-        return expenseRepository.findByDateBetween(start, end);
-    }
 
     public Expense updateExpense(Long id, Expense updatedExpense) {
         Expense expense = expenseRepository.findById(id)

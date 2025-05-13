@@ -32,7 +32,6 @@ public class ExpenseServiceTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        // Create a sample expense
         expense = new Expense();
         expense.setId(1L);
         expense.setTitle("Test Expense");
@@ -42,7 +41,7 @@ public class ExpenseServiceTest {
 
     @Test
     void saveExpense_shouldReturnSavedExpense() {
-        Expense expense = new Expense("Lunch", 20.5, LocalDate.now(), null, null);
+        Expense expense = new Expense("Lunch", 20.5, LocalDate.now(), null);
         when(expenseRepository.save(expense)).thenReturn(expense);
 
         Expense savedExpense = expenseService.saveExpense(expense);
@@ -54,7 +53,7 @@ public class ExpenseServiceTest {
 
     @Test
     void getExpense_shouldReturnExpense_whenExpenseExists() {
-        Expense expense = new Expense("Lunch", 20.5, LocalDate.now(), null, null);
+        Expense expense = new Expense("Lunch", 20.5, LocalDate.now(), null);
         when(expenseRepository.findById(1L)).thenReturn(Optional.of(expense));
 
         Optional<Expense> foundExpense = expenseService.getExpense(1L);

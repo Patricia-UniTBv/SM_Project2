@@ -6,6 +6,5 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface ExpenseRepository extends JpaRepository<Expense, Long> {
-    List<Expense> findByUserId(Long userId);
-    List<Expense> findByDateBetween(LocalDate start, LocalDate end);
+    List<Expense> findByUserEmail(String email);
 }

@@ -3,6 +3,7 @@ package com.example.Controllers;
 import com.example.Models.Expense;
 import com.example.Services.ExpenseService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,14 +23,24 @@ public class ExpenseController {
     }
 
     @GetMapping
-    public List<Expense> getAllExpenses() {
-        return expenseService.getAllExpenses();
+    public List<Expense> getExpenses(@RequestParam(required = false) String userEmail) {
+        if (userEmail != null) {
+            return expenseService.getExpensesByUserEmail(userEmail);
+        } else {
+            return expenseService.getAllExpenses();
+        }
     }
 
+
     @PostMapping
-    public Expense addExpense(@RequestBody Expense expense) {
-        return expenseService.addExpense(expense);
+    public ResponseEntity<Expense>  addExpense(@RequestBody Expense expense) {
+        if (expense.getUserEmail() == null || expense.getUserEmail().isEmpty()) {
+            throw new IllegalArgumentException("User email must be provided");
+        }
+        Expense createdExpense = expenseService.addExpense(expense);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdExpense);
     }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<Expense> updateExpense(@PathVariable Long id, @RequestBody Expense updatedExpense) {
